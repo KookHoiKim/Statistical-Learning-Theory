@@ -27,7 +27,6 @@ def preprocess(images, labels, is_train=True):
     images = images.astype('float32')
     images /=255
     images = torch.from_numpy(images)
-    import pdb;pdb.set_trace()
 
     return images, labels
 
@@ -58,21 +57,42 @@ if __name__ == '__main__':
         print('Getting data for: ', shape)
         for file_name in os.listdir(os.path.join(current_dir, train_dir, shape)):
             train_images.append(cv2.imread(os.path.join(current_dir, train_dir, shape, file_name), 0))
-            import pdb;pdb.set_trace()
             #add an integer to the labels list
             train_labels.append(shape_list.index(shape))
 
     print('Number of training images: ', len(train_images))
-    import pdb;pdb.set_trace()
     # Preprocess (your own function)
     train_images, train_labels = preprocess(train_images, train_labels)
-
+    
     # Make a classifier (your own function)
     model = Network()
+    
+    lr = 0.001
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=lr)
 
+    epochs = 10
     # Problem 2: Train your model Here!
     # Implement HERE!
+    assert len(train_images) == len(train_labels), 'mismatch of length between images and labels'
 
+    for epoch in epochs:
+        
+        for i in range(len(train_label)):
+
+            image = train_images[i]
+            label = train_labels[i]
+            
+            output = model(image)
+            loss = criterion(output, label)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            if i % 10 == 0:
+                print('Epoch {}/{}, Step {}/{}, Loss: {:.4f}'
+                      .format(epoch+1, epochs, i+1, len(train_label), loss.item()))
 
     # Calculate accuracy
     pred_acc = np.sum(pred_labels==train_labels)/len(train_labels)*100
